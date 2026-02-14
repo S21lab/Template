@@ -1,24 +1,36 @@
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 build
 coverage
 .next
 out
+
+# Environment files
 .env
 .env.local
 .env.*.local
-*.log
+
+# OS files
 .DS_Store
 Thumbs.db
-.git
+
+# IDE
 .vscode
 .idea
+
+# Runtime
 pids
 *.pid
 *.seed
 postgres_data
 redis_data
+
+# Uploads
 uploads
-public
-*.min.js
-*.min.css
+
+# Only ignore specific minified files in specific places
+**/vendor/**/*.min.js
+**/vendor/**/*.min.css
