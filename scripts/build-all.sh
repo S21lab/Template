@@ -17,7 +17,7 @@ echo ""
 # ── Frontend ───────────────────────────────────────────────────────────────────
 echo "[2/3] Building frontend (Vite)..."
 cd "$ROOT_DIR/frontend/react-app"
-npm ci --silent
+npm install --silent
 npm run build
 echo "      Frontend build complete."
 echo ""

@@ -63,12 +63,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('frontend/react-app/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('frontend/react-app/package.json') }}
           restore-keys: ${{ runner.os }}-npm-
 
       - name: Install dependencies
         working-directory: frontend/react-app
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         working-directory: frontend/react-app
