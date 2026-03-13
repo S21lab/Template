@@ -4,27 +4,20 @@
 
 This monorepo hosts four independently deployable services that communicate over a shared Podman network (`app-network`).
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                     app-network (bridge)                │
-│                                                         │
-│  ┌──────────┐   REST/HTTP    ┌──────────────────────┐  │
-│  │ Frontend │ ─────────────▶ │  Backend (Spring Boot)│  │
-│  │ (nginx)  │                │  /api/v1             │  │
-│  └──────────┘                └──────────┬───────────┘  │
-│                                         │               │
-│                              ┌──────────▼────────┐      │
-│                              │   PostgreSQL 16   │      │
-│                              └───────────────────┘      │
-│                                         │               │
-│                              ┌──────────▼────────┐      │
-│                              │     Redis 7       │      │
-│                              └───────────────────┘      │
-│                                                         │
-│  ┌──────────────────┐                                   │
-│  │  Mobile (Flutter)│ ─── REST over HTTPS (external) ───▶ Backend
-│  └──────────────────┘                                   │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph net["app-network (bridge)"]
+        FE["Frontend\n(React + nginx)\nport 3000"]
+        BE["Backend\n(Spring Boot)\n/api/v1  port 8080"]
+        PG[("PostgreSQL 16\nport 5432")]
+        RD[("Redis 7\nport 6379")]
+
+        FE -->|REST / HTTP| BE
+        BE -->|JDBC| PG
+        BE -->|Spring Data Redis| RD
+    end
+
+    MOB["Mobile\n(Flutter)"] -->|"REST over HTTPS (external)"| BE
 ```
 
 ### Services
