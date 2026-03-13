@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -6,6 +7,10 @@ import { getToken } from './services/auth';
 function PrivateRoute({ children }) {
     return getToken() ? children : <Navigate to="/login" replace />;
 }
+
+PrivateRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
 export default function App() {
     return (
