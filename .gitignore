@@ -1,58 +1,61 @@
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# Node
 node_modules/
 dist/
+.vite/
+*.tsbuildinfo
+
+# Flutter
+.dart_tool/
+.packages
 build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# Environment files — never commit secrets
 .env
 .env.local
 .env.*.local
+!.env.example
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage
-coverage/
-.nyc_output/
-
-# IDEs
-.vscode/
+# IDE
 .idea/
-*.swp
-*.swo
-*~
-.DS_Store
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # OS
-Thumbs.db
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V7
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Docker
-postgres_data/
-redis_data/
+# Container artifacts
+*.tar
+*.tar.gz
 
-# Backups
-database/backups/*.sql
+# Logs
+*.log
+logs/
 
-# IDE specific
-.vscode/launch.json
-.vscode/settings.json
-
-# Temporary files
-tmp/
-temp/
-
-# Mobile
-mobile/.expo/
-mobile/dist/
-
-# Build outputs
-backend/dist/
-web/dist/
+# Test reports
+**/surefire-reports/
+**/test-results/
+coverage/

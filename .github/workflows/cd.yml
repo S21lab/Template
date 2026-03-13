@@ -1,0 +1,88 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-containers:
+    name: Build & Archive Containers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Podman
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y podman
+
+      - name: Build backend container
+        run: |
+          podman build \
+            -t app-backend:${{ github.sha }} \
+            -t app-backend:latest \
+            backend/java-spring-api
+
+      - name: Build frontend container
+        run: |
+          podman build \
+            -t app-frontend:${{ github.sha }} \
+            -t app-frontend:latest \
+            frontend/react-app
+
+      - name: Build redis container
+        run: |
+          podman build \
+            -t app-redis:${{ github.sha }} \
+            -t app-redis:latest \
+            database/redis
+
+      - name: Save container images as artifacts
+        run: |
+          mkdir -p artifacts
+          podman save app-backend:latest  | gzip > artifacts/app-backend.tar.gz
+          podman save app-frontend:latest | gzip > artifacts/app-frontend.tar.gz
+          podman save app-redis:latest    | gzip > artifacts/app-redis.tar.gz
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-images-${{ github.sha }}
+          path: artifacts/
+          retention-days: 7
+
+  notify:
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    needs: [build-containers]
+    if: always()
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          JOB_STATUS: ${{ needs.build-containers.result }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          if [ "$JOB_STATUS" = "success" ]; then
+            COLOR=3066993
+            TITLE="CD Pipeline — Succeeded"
+          else
+            COLOR=15158332
+            TITLE="CD Pipeline — Failed"
+          fi
+
+          curl -s -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"$TITLE\",
+                \"color\": $COLOR,
+                \"fields\": [
+                  {\"name\": \"Branch\", \"value\": \"$BRANCH\", \"inline\": true},
+                  {\"name\": \"Commit\", \"value\": \"${COMMIT:0:7}\", \"inline\": true},
+                  {\"name\": \"Container Build\", \"value\": \"$JOB_STATUS\", \"inline\": true}
+                ]
+              }]
+            }"

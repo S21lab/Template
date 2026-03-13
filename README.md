@@ -1,316 +1,150 @@
-# Project Template
+# Full Stack Monorepo Template
 
-A comprehensive, production-ready template for building scalable applications with Mobile, Web, Backend, Database, and CI/CD infrastructure.
+A production-ready monorepo template for a full-stack project using Spring Boot, React/Vite, Flutter, PostgreSQL, Redis, and Podman.
 
-## 📋 Project Structure
+## Tech Stack
+
+| Layer      | Technology              |
+| ---------- | ----------------------- |
+| Backend    | Java 21 + Spring Boot 3 |
+| Frontend   | React 18 + Vite 5       |
+| Mobile     | Flutter 3 (Dart)        |
+| Database   | PostgreSQL 16           |
+| Cache      | Redis 7                 |
+| Containers | Podman                  |
+
+## Repository Structure
 
 ```
-Template/
-├── mobile/              # Mobile application (React Native/Flutter)
-├── web/                 # Web frontend (React/Vue/Angular)
-├── backend/             # Backend services (Node.js/Python/Go)
-├── database/            # Database schemas and migrations
-├── docker/              # Docker configurations
-├── .github/workflows/   # CI/CD pipelines (GitHub Actions)
-├── scripts/             # Utility and automation scripts
-├── config/              # Configuration files
-├── docs/                # Documentation
-├── docker-compose.yml   # Local development orchestration
-├── .env.example         # Environment variables template
-└── README.md            # This file
+├── backend/
+│   └── java-spring-api/        # Spring Boot REST API
+├── frontend/
+│   └── react-app/              # React + Vite application
+├── mobile/
+│   └── flutter-app/            # Flutter mobile app
+├── database/
+│   ├── postgres/               # PostgreSQL init scripts & schema
+│   └── redis/                  # Redis configuration + Containerfile
+├── containers/
+│   ├── podman-compose.yaml     # Service orchestration
+│   └── .env.example            # Environment variable template
+├── docs/                       # Architecture & process documentation
+├── .github/workflows/          # CI/CD pipelines
+└── scripts/                    # Developer utility scripts
 ```
 
-## 🚀 Quick Start
+## Prerequisites
 
-### Prerequisites
+- [Podman](https://podman.io/) >= 4.0
+- [podman-compose](https://github.com/containers/podman-compose) >= 1.0
+- JDK 21 (for local backend development)
+- Node.js >= 20 (for local frontend development)
+- Flutter >= 3.0 (for mobile development)
+- Maven 3.9+ (for backend builds)
 
-- Docker & Docker Compose
-- Node.js 18+
-- Git
+## Quick Start
 
-### Development Setup
+### 1. Clone and configure
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd enterprise-template
+git clone <repository-url>
+cd <repository>
+```
 
-# Copy environment variables
+Copy and edit the environment file:
+
+```bash
+cp containers/.env.example containers/.env
+# Open containers/.env and fill in your secrets
+```
+
+### 2. Start all services with Podman
+
+```bash
+./scripts/dev-start.sh
+```
+
+Or manually:
+
+```bash
+cd containers
+podman-compose up -d
+```
+
+### 3. Access services
+
+| Service    | URL                                 |
+| ---------- | ----------------------------------- |
+| Backend    | http://localhost:8080/api/v1        |
+| Health     | http://localhost:8080/api/v1/health |
+| Frontend   | http://localhost:3000               |
+| PostgreSQL | localhost:5432                      |
+| Redis      | localhost:6379                      |
+
+## Local Development (without containers)
+
+### Backend
+
+```bash
+cd backend/java-spring-api
 cp .env.example .env
-
-# Start local development environment
-docker-compose up -d
-
-# Install dependencies
-./scripts/install-all.sh
-
-# Start development servers
-./scripts/dev-all.sh
+# Start PostgreSQL and Redis locally or point to running containers
+mvn spring-boot:run
 ```
 
-## 📱 Mobile App
-
-Located in `mobile/` directory.
-
-**Supported Frameworks:**
-
-- React Native (TypeScript)
-- Flutter (Dart)
-
-**Features:**
-
-- Expo/EAS build configuration
-- Native module integration
-- Secure API communication
-- Local state management
-- Push notifications ready
-
-**Build & Run:**
+### Frontend
 
 ```bash
-cd mobile
-npm install
-npm run dev  # or flutter run
-```
-
-## 🌐 Web Application
-
-Located in `web/` directory.
-
-**Tech Stack:**
-
-- React/Vue/Angular
-- TypeScript
-- Tailwind CSS
-- State Management (Redux/Zustand)
-- Testing (Jest/Vitest)
-
-**Features:**
-
-- Responsive design
-- PWA ready
-- Dark mode support
-- Internationalization (i18n)
-- Accessibility (a11y)
-
-**Build & Run:**
-
-```bash
-cd web
+cd frontend/react-app
+cp .env.example .env.local
 npm install
 npm run dev
 ```
 
-## 🔧 Backend Service
-
-Located in `backend/` directory.
-
-**Tech Stack:**
-
-- Node.js (Express/NestJS) or Python (FastAPI/Django)
-- TypeScript/Python
-- RESTful API or GraphQL
-- JWT Authentication
-- Rate limiting & middleware
-
-**Features:**
-
-- Structured folder organization
-- Database ORM integration
-- API documentation (Swagger/OpenAPI)
-- Error handling & logging
-- Health checks endpoint
-
-**Build & Run:**
+### Mobile
 
 ```bash
-cd backend
-npm install
-npm run dev
+cd mobile/flutter-app
+cp .env.example .env
+flutter pub get
+flutter run
 ```
 
-## 🗄️ Database
+## Scripts
 
-Located in `database/` directory.
+| Script                 | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `scripts/dev-start.sh` | Start the full stack with podman-compose    |
+| `scripts/build-all.sh` | Build backend, frontend, and all containers |
+| `scripts/lint-all.sh`  | Run all linters                             |
 
-**Supported Databases:**
-
-- PostgreSQL (recommended for production)
-- MySQL
-- MongoDB
-
-**Contents:**
-
-- Schema definitions
-- Migration scripts
-- Seed data
-- Backup scripts
-- Performance indexes
-
-**Structure:**
-
-```
-database/
-├── migrations/        # Version controlled schema changes
-├── seeds/            # Initial data imports
-├── schemas/          # Database schema definitions
-└── backups/          # Backup storage
-```
-
-## 🐳 Docker Configuration
-
-Located in `docker/` directory.
-
-**Services Included:**
-
-- Web container
-- Backend API container
-- Database container
-- Redis (caching)
-- Nginx (reverse proxy)
-
-**Production Deployment:**
+Make scripts executable if needed:
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+chmod +x scripts/*.sh
 ```
 
-**Local Development:**
+## CI/CD
 
-```bash
-docker-compose up
-```
+GitHub Actions workflows in [.github/workflows/](.github/workflows/):
 
-## 🔄 CI/CD Pipeline
+- **CI** — Runs on every push and pull request: builds, lints, tests, validates containers
+- **CD** — Runs on `main` branch: builds and archives release container images
 
-Located in `.github/workflows/` directory.
+### Required GitHub Secrets
 
-**Automated Workflows:**
+| Secret                | Description                                        |
+| --------------------- | -------------------------------------------------- |
+| `DISCORD_WEBHOOK_URL` | Discord channel webhook for pipeline notifications |
 
-- **Test**: Run unit & integration tests
-- **Build**: Build Docker images
-- **Security**: SAST scanning, dependency check
-- **Deploy**: Push to staging/production
-- **Quality**: Code coverage & linting
+## Documentation
 
-**Workflows:**
-
-- `test.yml` - Automated testing on PR
-- `build.yml` - Build and push images
-- `deploy-staging.yml` - Deploy to staging
-- `deploy-production.yml` - Deploy to production
-
-## 📦 Scripts
-
-Located in `scripts/` directory.
-
-**Available Scripts:**
-
-- `install-all.sh` - Install all dependencies
-- `dev-all.sh` - Start all services in development mode
-- `build-all.sh` - Build all applications
-- `test-all.sh` - Run all tests
-- `migrate-db.sh` - Run database migrations
-- `backup-db.sh` - Backup database
-- `cleanup.sh` - Clean up containers and volumes
-
-## ⚙️ Configuration
-
-Located in `config/` directory.
-
-**Default Configurations:**
-
-- `default.env` - Default environment variables
-- `production.env` - Production settings
-- `development.env` - Development settings
-- `nginx.conf` - Nginx configuration
-- `docker-compose.yml` - Compose configuration
-
-## 📚 Documentation
-
-Located in `docs/` directory.
-
-- `ARCHITECTURE.md` - System architecture overview
-- `API.md` - API endpoints documentation
-- `DATABASE.md` - Database schema documentation
-- `DEPLOYMENT.md` - Deployment guide
-- `SECURITY.md` - Security best practices
-- `CONTRIBUTING.md` - Contributing guidelines
-
-## 🔒 Security
-
-- Environment variables via `.env` files
-- JWT token authentication
-- CORS configuration
-- SQL injection prevention
-- Rate limiting
-- HTTPS in production
-- Secrets management (Vault/AWS Secrets Manager)
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-./scripts/test-all.sh
-
-# Run specific service tests
-cd backend && npm run test
-cd web && npm run test
-cd mobile && npm run test
-```
-
-## 📦 Deployment
-
-### Staging
-
-```bash
-git push origin staging
-# Automatically deployed via CI/CD
-```
-
-### Production
-
-```bash
-git tag v0.0.1
-git push origin v0.0.1
-# Automatically deployed via CI/CD
-```
-
-## 📈 Monitoring & Logging
-
-- Centralized logging (ELK Stack / Cloud Logging)
-- Application monitoring (New Relic / DataDog)
-- Error tracking (Sentry)
-- Performance monitoring (Application Insights)
-
-## 🤝 Contributing
-
-1. Create feature branch: `git checkout -b feature/your-feature`
-2. Commit changes: `git commit -am 'Add your feature'`
-3. Push to branch: `git push origin feature/your-feature`
-4. Submit pull request
-
-See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-- Documentation: [docs/](docs/)
-- Issues: [GitHub Issues](https://github.com/your-org/enterprise-template/issues)
-- Discussions: [GitHub Discussions](https://github.com/your-org/enterprise-template/discussions)
-
-## 🗺️ Roadmap
-
-- [ ] Add API versioning documentation
-- [ ] Implement advanced caching strategies
-- [ ] Add E2E testing framework
-- [ ] Implement service mesh (Istio)
-- [ ] Add performance benchmarking
-- [ ] Implement blue-green deployment
-
----
-
-**Last Updated:** February 2026
+| Document                               | Description                        |
+| -------------------------------------- | ---------------------------------- |
+| [Architecture](./docs/architecture.md) | System design & data flow          |
+| [Versioning](./docs/versioning.md)     | Semantic versioning & release flow |
+| [Security](./docs/security.md)         | Secrets, auth model, isolation     |
+| [Deployment](./docs/deployment.md)     | Podman deployment guide            |
+| [Testing](./docs/testing.md)           | Testing strategies per layer       |
+| [Formatting](./docs/formatting.md)     | Code style & linting rules         |
+| [Contributing](./docs/contributing.md) | Branch strategy & PR guidelines    |

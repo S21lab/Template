@@ -1,26 +1,32 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Build All Applications
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-set -e
-
-echo "🔨 Building all applications..."
-
+echo "==> Building all services..."
 echo ""
-echo "🔨 Building Backend..."
-cd backend
+
+# ── Backend ────────────────────────────────────────────────────────────────────
+echo "[1/3] Building backend (Maven)..."
+cd "$ROOT_DIR/backend/java-spring-api"
+mvn package -DskipTests -q
+echo "      Backend build complete."
+echo ""
+
+# ── Frontend ───────────────────────────────────────────────────────────────────
+echo "[2/3] Building frontend (Vite)..."
+cd "$ROOT_DIR/frontend/react-app"
+npm ci --silent
 npm run build
-cd ..
+echo "      Frontend build complete."
+echo ""
 
+# ── Containers ─────────────────────────────────────────────────────────────────
+echo "[3/3] Building container images (Podman)..."
+cd "$ROOT_DIR/containers"
+podman-compose build
+echo "      Container images built."
 echo ""
-echo "🔨 Building Web..."
-cd web
-npm run build
-cd ..
 
-echo ""
-echo "✅ All applications built successfully!"
-echo ""
-echo "Outputs:"
-echo "  - Backend: backend/dist"
-echo "  - Web: web/dist"
+echo "==> All services built successfully."
